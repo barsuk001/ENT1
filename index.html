@@ -54,7 +54,7 @@ const rd=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){ret
 const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const name=id=>SUBJ.find(s=>s[0]===id)[1];
 const lname=l=>LV.find(x=>x[0]===l)[1];
-const bank=id=>{const b=window.BANK[id];return Array.isArray(b)?{easy:b}:(b||{})};
+const bank=id=>{const b=(window.BANK||{})[id];return Array.isArray(b)?{easy:b}:(b||{})};
 const tests=(id,l)=>Math.floor((bank(id)[l]||[]).length/N);
 const done=(id,l)=>(rd("ent_p")||{})[id+"_"+l]||0;
 const isOpen=(id,i)=>i===0||(tests(id,LV[i-1][0])>0&&done(id,LV[i-1][0])>=tests(id,LV[i-1][0]));
@@ -62,6 +62,7 @@ const el=h=>{app.innerHTML=h;window.scrollTo(0,0)};
 
 function home(){
   clearInterval(timer);
+  if(!window.BANK){el('<h1>Не найден файл с вопросами</h1><p>Загрузите файл questions.js в тот же репозиторий, что и index.html. Название должно быть точно такое: questions.js</p>');return}
   const hist=(rd("ent_results")||[]).slice(0,5).map(r=>`<div>${r.date}: ${name(r.id)}, ${lname(r.l)}, ${r.score} из ${r.total}</div>`).join("");
   el(`<h1>Готовимся к ЕНТ бесплатно</h1>
   <p>Тесты по ${N} вопросов, на каждый вопрос ${T} секунд. Три уровня сложности открываются по очереди.</p>`+
